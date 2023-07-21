@@ -17,8 +17,8 @@ async fn health() -> HttpResponse {
 
 #[cfg(test)]
 mod tests {
-    use actix_web::http::StatusCode;
     use super::*;
+    use actix_web::http::StatusCode;
 
     #[actix_rt::test]
     async fn health_check_returns_200() {
@@ -34,5 +34,4 @@ mod tests {
 
         assert_eq!(data, Some(API_VERSION));
     }
-
 }
