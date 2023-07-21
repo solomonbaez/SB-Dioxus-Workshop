@@ -1,5 +1,5 @@
 use actix_web::{web, web::ServiceConfig};
-use api_lib::health_check::{hello_world, version};
+use api_lib::health_check::{health, hello_world, version};
 use shuttle_actix_web::ShuttleActixWeb;
 use shuttle_runtime::CustomError;
 use sqlx::{Executor, PgPool};
@@ -16,7 +16,10 @@ async fn actix_web(
     let pool = web::Data::new(pool);
 
     let config = move |cfg: &mut ServiceConfig| {
-        cfg.app_data(pool).service(hello_world).service(version);
+        cfg.app_data(pool)
+            .service(hello_world)
+            .service(health)
+            .service(version);
     };
 
     Ok(config.into())
