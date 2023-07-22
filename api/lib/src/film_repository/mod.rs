@@ -2,6 +2,7 @@ use shared::models::{CreateFilm, Film};
 use uuid::Uuid;
 
 mod pg_film_repository;
+pub use pg_film_repository::PgFilmRepository;
 
 pub type FilmError = String;
 pub type FilmResult<T> = Result<T, FilmError>;
