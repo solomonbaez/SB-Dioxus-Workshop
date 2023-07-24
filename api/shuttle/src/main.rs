@@ -18,7 +18,7 @@ async fn actix_web(
     let config = move |cfg: &mut ServiceConfig| {
         cfg.app_data(film_repository)
             .configure(api_lib::health_check::service)
-            .configure(api_lib::films::service);
+            .configure(api_lib::films::service::<api_lib::film_repository::PgFilmRepository>);
     };
 
     Ok(config.into())
