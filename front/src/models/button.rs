@@ -1,8 +1,8 @@
 use std::fmt;
 
 pub enum ButtonType {
-    Primary, 
-    Secondary
+    Primary,
+    Secondary,
 }
 
 impl fmt::Display for ButtonType {
