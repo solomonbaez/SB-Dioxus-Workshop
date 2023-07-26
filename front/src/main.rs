@@ -40,7 +40,7 @@ fn App(cx: Scope) -> Element {
     let films = use_state::<Option<Vec<Film>>>(cx, || None);
     let selected_film = use_state::<Option<Film>>(cx, || None);
     let force_get_films = use_state(cx, || ());
-    
+
     {
         let films = films.clone();
         use_effect(cx, force_get_films, |_| async move {
@@ -78,7 +78,7 @@ fn App(cx: Scope) -> Element {
         let force_get_films = force_get_films.clone();
         let current_selected_film = selected_film.clone();
         let is_modal_visible = is_modal_visible.clone();
-    
+
         cx.spawn({
             async move {
                 let response = if current_selected_film.get().is_some() {
@@ -107,7 +107,7 @@ fn App(cx: Scope) -> Element {
                 }
             }
         });
-    };    
+    };
 
     cx.render(rsx! {
         main {
