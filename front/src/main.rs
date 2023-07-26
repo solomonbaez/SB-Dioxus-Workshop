@@ -13,7 +13,7 @@ fn main() {
     dioxus_web::launch(App);
 }
 
-const API_ENDPOINT: &str = "api/v1";
+const API_ENDPOINT: &str = "api";
 
 fn films_endpoint() -> String {
     let window = web_sys::window().expect("no global `window` exists");

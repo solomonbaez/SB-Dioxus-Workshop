@@ -22,7 +22,7 @@ async fn actix_web(
             web::scope("/api")
                 .app_data(film_repository)
                 .configure(api_lib::health_check::service)
-                .configure(api_lib::v1::service::<api_lib::film_repository::PgFilmRepository>),
+                .configure(api_lib::films::service::<api_lib::film_repository::PgFilmRepository>),
         )
         .service(
             actix_files::Files::new("/", static_folder)
