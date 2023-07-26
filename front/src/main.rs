@@ -8,24 +8,24 @@ use models::FilmModalVisibility;
 use shared::models::Film;
 use uuid::Uuid;
 
-const API_ENDPOINT: &str = "api/v1";
-
 fn main() {
     wasm_logger::init(wasm_logger::Config::default().module_prefix("front"));
     dioxus_web::launch(App);
 }
 
+const API_ENDPOINT: &str = "api/v1";
+
 fn films_endpoint() -> String {
-    let window = web_sys::window().expect("no global 'window' eists");
+    let window = web_sys::window().expect("no global `window` exists");
     let location = window.location();
-    let host = location.host().expect("host required");
-    let protocol = location.protocol().expect("protocol required");
+    let host = location.host().expect("should have a host");
+    let protocol = location.protocol().expect("should have a protocol");
     let endpoint = format!("{}//{}/{}", protocol, host, API_ENDPOINT);
     format!("{}/films", endpoint)
 }
 
 async fn get_films() -> Vec<Film> {
-    log::info!("Fetching films from {}", films_endpoint());
+    log::info!("Getting films {}", films_endpoint());
     reqwest::get(&films_endpoint())
         .await
         .unwrap()

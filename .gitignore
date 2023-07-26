@@ -3,3 +3,4 @@ Secrets*.toml
 api/shuttle/static/
 dist/
 node_modules/
+static/
