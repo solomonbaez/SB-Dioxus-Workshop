@@ -74,7 +74,7 @@ pub fn FilmModal<'a>(cx: Scope<'a, FilmModalProps>) -> Element<'a> {
                             value: "{draft_film.get().director}",
                             oninput: move |event| {
                                 draft_film.set(Film {
-                                    title: event.value.clone(),
+                                    director: event.value.clone(),
                                     ..draft_film.get().clone()
                                 })
                             }
@@ -93,7 +93,7 @@ pub fn FilmModal<'a>(cx: Scope<'a, FilmModalProps>) -> Element<'a> {
                             value: "{draft_film.get().year.to_string()}",
                             oninput: move |event| {
                                 draft_film.set(Film {
-                                    title: event.value.clone(),
+                                    year: event.value.clone().parse::<u16>().unwrap_or(1900),
                                     ..draft_film.get().clone()
                                 })
                             }
@@ -112,7 +112,7 @@ pub fn FilmModal<'a>(cx: Scope<'a, FilmModalProps>) -> Element<'a> {
                             value: "{draft_film.get().poster}",
                             oninput: move |event| {
                                 draft_film.set(Film {
-                                    title: event.value.clone(),
+                                    poster: event.value.clone(),
                                     ..draft_film.get().clone()
                                 })
                             }
