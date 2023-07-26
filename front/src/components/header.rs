@@ -1,7 +1,12 @@
 // prelude includes all macros
+use crate::{
+    components::Button,
+    models::{ButtonType, FilmModalVisibility},
+};
 use dioxus::prelude::*;
 
 pub fn Header(cx: Scope) -> Element {
+    let is_modal_visible = use_shared_state::<FilmModalVisibility>(cx).unwrap();
     cx.render(rsx!(
         header {
             class: "sticky top-0 z-10 text-gray-400 bg-gray-800 body-font shadow-md",
@@ -15,6 +20,13 @@ pub fn Header(cx: Scope) -> Element {
                         "loading": "lazy"
                     }
                     span { class: "ml-3 text-2x1", "Rusty films" }
+                }
+                Button {
+                    button_type: ButtonType::Primary,
+                    onclick: move |_| {
+                        is_modal_visible.write().0 = true;
+                    },
+                    "Add new film"
                 }
             }
         }
