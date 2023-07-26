@@ -6,10 +6,32 @@ mod models;
 use components::{FilmCard, FilmModal, Footer, Header};
 use models::FilmModalVisibility;
 use shared::models::Film;
+use uuid::Uuid;
+
+const API_ENDPOINT: &str = "api/v1";
 
 fn main() {
     wasm_logger::init(wasm_logger::Config::default().module_prefix("front"));
     dioxus_web::launch(App);
+}
+
+fn films_endpoint() -> String {
+    let window = web_sys::window().expect("no global 'window' eists");
+    let location = window.location();
+    let host = location.host().expect("host required");
+    let protocol = location.protocol().expect("protocol required");
+    let endpoint = format!("{}//{}/{}", protocol, host, API_ENDPOINT);
+    format!("{}/films", endpoint)
+}
+
+async fn get_films() -> Vec<Film> {
+    log::info!("Fetching films from {}", films_endpoint());
+    reqwest::get(&films_endpoint())
+        .await
+        .unwrap()
+        .json::<Vec<Film>>()
+        .await
+        .unwrap()
 }
 
 fn App(cx: Scope) -> Element {
@@ -18,6 +40,74 @@ fn App(cx: Scope) -> Element {
     let films = use_state::<Option<Vec<Film>>>(cx, || None);
     let selected_film = use_state::<Option<Film>>(cx, || None);
     let force_get_films = use_state(cx, || ());
+    
+    {
+        let films = films.clone();
+        use_effect(cx, force_get_films, |_| async move {
+            let existing_films = get_films().await;
+            if existing_films.is_empty() {
+                films.set(None);
+            } else {
+                films.set(Some(existing_films));
+            }
+        });
+    }
+
+    let delete_film = move |filmId: Uuid| {
+        let force_get_films = force_get_films.clone();
+        cx.spawn({
+            async move {
+                let response = reqwest::Client::new()
+                    .delete(&format!("{}/{}", &films_endpoint(), filmId))
+                    .send()
+                    .await;
+                match response {
+                    Ok(_data) => {
+                        log::info!("Film deleted");
+                        force_get_films.set(());
+                    }
+                    Err(err) => {
+                        log::info!("Error deleting film: {:?}", err);
+                    }
+                }
+            }
+        });
+    };
+
+    let create_or_update_film = move |film: Film| {
+        let force_get_films = force_get_films.clone();
+        let current_selected_film = selected_film.clone();
+        let is_modal_visible = is_modal_visible.clone();
+    
+        cx.spawn({
+            async move {
+                let response = if current_selected_film.get().is_some() {
+                    reqwest::Client::new()
+                        .put(&films_endpoint())
+                        .json(&film)
+                        .send()
+                        .await
+                } else {
+                    reqwest::Client::new()
+                        .post(&films_endpoint())
+                        .json(&film)
+                        .send()
+                        .await
+                };
+                match response {
+                    Ok(_data) => {
+                        log::info!("Film created");
+                        current_selected_film.set(None);
+                        is_modal_visible.write().0 = false;
+                        force_get_films.set(());
+                    }
+                    Err(err) => {
+                        log::info!("Error creating film: {:?}", err);
+                    }
+                }
+            }
+        });
+    };    
 
     cx.render(rsx! {
         main {
